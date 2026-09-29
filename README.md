@@ -101,7 +101,12 @@ curl -fsSL https://raw.githubusercontent.com/glopez21/sur1w1r3/main/deploy/boots
 For an interactive install, run this one command. The script prompts for the
 flow URL and reads the flow key without echoing it; alert ingestion is optional.
 It then installs the shipper, generates `/etc/suricata-shipper.env`, tests each
-configured sink, and starts the service only if tests pass:
+configured sink, and starts the service only if tests pass.
+
+If the host lacks Python 3.11+, `--install` provisions Astral's managed Python
+runtime with `uv` under `/opt/suricata-shipper/python` (Ubuntu 18.04's system
+Python is too old). This requires outbound access to `astral.sh` and the Python
+build-standalone download host.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/glopez21/sur1w1r3/main/deploy/bootstrap.sh \

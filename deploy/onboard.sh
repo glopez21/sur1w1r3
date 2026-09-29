@@ -82,14 +82,53 @@ DISK_AVAILABLE="$(df -hP /var/lib 2>/dev/null | awk 'NR == 2 {print $4}')"
 printf 'Resources: %s CPU(s) | %s MiB RAM | %s available on /var/lib\n' \
     "$CPU_COUNT" "$MEMORY_MIB" "${DISK_AVAILABLE:-unknown}"
 
-PYTHON_BIN=""
-for candidate in python3.11 python3; do
-    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys; raise SystemExit(sys.version_info < (3,11))' 2>/dev/null; then
-        PYTHON_BIN="$candidate"
-        break
+PYTHON_BIN="${PYTHON_BIN:-}"
+if [[ -n "$PYTHON_BIN" ]] && ! "$PYTHON_BIN" -c 'import sys; raise SystemExit(sys.version_info < (3,11))' 2>/dev/null; then
+    warn "PYTHON_BIN is not a usable Python 3.11+ interpreter; searching for another"
+    PYTHON_BIN=""
+fi
+if [[ -z "$PYTHON_BIN" ]]; then
+    for candidate in python3.11 python3; do
+        if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys; raise SystemExit(sys.version_info < (3,11))' 2>/dev/null; then
+            PYTHON_BIN="$(command -v "$candidate")"
+            break
+        fi
+    done
+fi
+
+# Older LTS images (for example Ubuntu 18.04) do not package Python 3.11.
+# During an explicit root install, provision Astral's portable managed runtime
+# rather than failing and requiring a distro-specific PPA or a source build.
+if [[ -z "$PYTHON_BIN" && "$MODE" == install ]]; then
+    info "Python 3.11+ missing; provisioning a managed runtime with uv"
+    if ! command -v uv >/dev/null 2>&1; then
+        if ! curl --fail --location --silent --show-error https://astral.sh/uv/install.sh \
+            | env UV_UNMANAGED_INSTALL=/usr/local/bin sh; then
+            fail "could not install uv; check outbound access to astral.sh"
+        fi
     fi
-done
-if [[ -n "$PYTHON_BIN" ]]; then pass "Python 3.11+ available: $($PYTHON_BIN --version 2>&1)"; else fail "Python 3.11+ is required"; fi
+    if command -v uv >/dev/null 2>&1; then
+        PYTHON_HOME="/opt/suricata-shipper/python"
+        if UV_PYTHON_INSTALL_DIR="$PYTHON_HOME" UV_PYTHON_BIN_DIR=/usr/local/bin \
+            uv python install 3.11; then
+            PYTHON_BIN="$(UV_PYTHON_INSTALL_DIR="$PYTHON_HOME" UV_PYTHON_BIN_DIR=/usr/local/bin uv python find 3.11 2>/dev/null || true)"
+        else
+            fail "uv could not provision Python 3.11; check outbound access to python-build-standalone"
+        fi
+    fi
+fi
+
+if [[ -n "$PYTHON_BIN" ]] && "$PYTHON_BIN" -c 'import sys; raise SystemExit(sys.version_info < (3,11))' 2>/dev/null; then
+    export PYTHON_BIN
+    pass "Python 3.11+ available: $($PYTHON_BIN --version 2>&1)"
+else
+    PYTHON_BIN=""
+    if [[ "$MODE" == check ]]; then
+        fail "Python 3.11+ required; --install can provision it via uv"
+    else
+        fail "could not provision Python 3.11+ via uv"
+    fi
+fi
 
 DEFAULT_IFACE=""
 if command -v ip >/dev/null 2>&1; then
@@ -119,7 +158,7 @@ else
 fi
 
 if command -v suricata >/dev/null 2>&1; then
-    pass "Suricata installed: $(suricata --build-info 2>/dev/null | awk '/Suricata version/ {print $NF; exit}' || suricata -V 2>&1 | head -1)"
+    pass "Suricata installed: $(suricata -V 2>&1)"
 else
     fail "Suricata is not installed; install/configure it before onboarding the shipper"
 fi
