@@ -1,4 +1,4 @@
-"""Configuration for suricata-shipper.
+"""Configuration for Sur1W1r3.
 
 Uses pydantic-settings with an ``EVE_SHIPPER_`` env prefix, ``.env`` file
 support, and hostname-derived defaults so a minimal deploy needs little config.

@@ -87,7 +87,7 @@ class SuricataShipper:
 
         self._running = True
         logger.info(
-            "suricata-shipper started: source=%s targets=%s eve=%s",
+            "Sur1W1r3 started: source=%s targets=%s eve=%s",
             self.config.source,
             ",".join(targets),
             self.config.eve_path,
@@ -106,7 +106,7 @@ class SuricataShipper:
                 await flow_client.close()
             if alert_client:
                 await alert_client.close()
-            logger.info("suricata-shipper stopped")
+            logger.info("Sur1W1r3 stopped")
 
     # --- one cycle ------------------------------------------------------------
 

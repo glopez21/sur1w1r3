@@ -66,7 +66,7 @@ ALERT_KEY="${EVE_SHIPPER_ALERT_API_KEY:-}"
 ALERT_SECRET="${EVE_SHIPPER_ALERT_WEBHOOK_SECRET:-}"
 TLS_VERIFY="${EVE_SHIPPER_TLS_VERIFY:-true}"
 
-printf 'Suricata shipper host discovery (%s)\n' "$MODE"
+printf 'Sur1W1r3 host discovery (%s)\n' "$MODE"
 printf 'Host: %s | OS: ' "$HOSTNAME_SHORT"
 if [[ -r /etc/os-release ]]; then
     . /etc/os-release
@@ -293,6 +293,6 @@ mv "$CONFIG_TMP" "$CONFIG_FILE"
 trap - EXIT
 
 printf '\nTesting configured SOC sinks before service start...\n'
-runuser -u "$SERVICE_USER" -- "$INSTALL_DIR/.venv/bin/suricata-shipper" test --config "$CONFIG_FILE"
+runuser -u "$SERVICE_USER" -- "$INSTALL_DIR/.venv/bin/sur1w1r3" test --config "$CONFIG_FILE"
 systemctl enable --now suricata-shipper.service
-printf '\n[onboard] Pipeline active. Follow logs with: journalctl -u suricata-shipper -f\n'
+printf '\n[Sur1W1r3] Pipeline active. Follow logs with: journalctl -u suricata-shipper -f\n'

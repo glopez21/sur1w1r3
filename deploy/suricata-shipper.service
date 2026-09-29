@@ -1,6 +1,6 @@
 [Unit]
-Description=Suricata Shipper — EVE telemetry to ThreatPulse
-Documentation=https://github.com/glopez21/suricata-shipper
+Description=Sur1W1r3 — Suricata EVE telemetry to ThreatPulse
+Documentation=https://github.com/glopez21/sur1w1r3
 After=network-online.target suricata.service
 Wants=network-online.target
 # Do not hard-fail if Suricata is not installed; the shipper waits for the file.
@@ -11,7 +11,7 @@ Type=simple
 User=suricata-shipper
 Group=suricata-shipper
 EnvironmentFile=/etc/suricata-shipper.env
-ExecStart=/opt/suricata-shipper/.venv/bin/suricata-shipper run
+ExecStart=/opt/suricata-shipper/.venv/bin/sur1w1r3 run
 Restart=always
 RestartSec=10
 # Give the queue time to flush on a graceful stop.

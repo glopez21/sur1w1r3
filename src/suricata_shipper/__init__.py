@@ -1,4 +1,4 @@
-"""suricata-shipper: forward Suricata EVE telemetry to ThreatPulse.
+"""Sur1W1r3: forward Suricata EVE telemetry to a SOC.
 
 ThreatPulse is the Tier-1 platform; alerts that clear its correlation and
 triage thresholds are escalated to Augur by the alerting service, so this agent

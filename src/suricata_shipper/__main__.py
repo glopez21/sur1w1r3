@@ -1,4 +1,4 @@
-"""suricata-shipper CLI."""
+"""Sur1W1r3 CLI."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ from suricata_shipper.queue import PositionStore, ShipQueue
 from suricata_shipper.shipper import SuricataShipper, setup_signal_handlers
 
 app = typer.Typer(
-    name="suricata-shipper",
-    help="Ship Suricata EVE flow and alert telemetry to ThreatPulse",
+    name="sur1w1r3",
+    help="Ship Suricata EVE telemetry to ThreatPulse",
     add_completion=False,
 )
 console = Console()
@@ -34,7 +34,7 @@ def _setup_logging(level: str = "INFO") -> None:
 
 @app.callback()
 def callback() -> None:
-    """ThreatPulse Suricata shipper — EVE to Tier-1 ingest."""
+    """Sur1W1r3 — Suricata EVE telemetry to SOC ingest."""
 
 
 @app.command()
@@ -107,7 +107,7 @@ def status(
     store = PositionStore(state_path)
     offset, inode = store.load()
 
-    table = Table(title="suricata-shipper status")
+    table = Table(title="Sur1W1r3 status")
     table.add_column("Metric", style="cyan")
     table.add_column("Value", style="green")
 
@@ -183,7 +183,7 @@ def test(
     if alert_url or alert_webhook_secret:
         entry = alert_to_log_entry(
             {
-                "signature": "suricata-shipper connectivity test",
+                "signature": "Sur1W1r3 connectivity test",
                 "signature_id": 0,
                 "category": "shipper-selftest",
                 "severity": 3,
@@ -224,7 +224,7 @@ def test(
 @app.command()
 def version() -> None:
     """Print the shipper version."""
-    console.print(f"suricata-shipper {__version__}")
+    console.print(f"Sur1W1r3 {__version__}")
 
 
 def main() -> None:

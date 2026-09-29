@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install suricata-shipper on a ThreatPulse-monitored host.
+# Install Sur1W1r3 on a SOC-monitored host.
 #
 # Idempotent: safe to re-run. Does NOT install Suricata itself — see README.md
 # for the sensor setup, which is intentionally a separate decision.
@@ -7,7 +7,7 @@
 # Usage:  sudo ./install.sh
 #
 # Afterwards, edit /etc/suricata-shipper.env and verify with:
-#   sudo -u suricata-shipper /opt/suricata-shipper/.venv/bin/suricata-shipper test
+#   sudo -u suricata-shipper /opt/suricata-shipper/.venv/bin/sur1w1r3 test
 
 set -euo pipefail
 
@@ -32,7 +32,7 @@ command -v systemctl >/dev/null 2>&1 || die "systemd not available on this host"
 if ! command -v suricata >/dev/null 2>&1; then
     log "WARNING: suricata is not installed."
     log "         The shipper will run but have nothing to read."
-    log "         Install the sensor first: see agents/suricata-shipper/README.md"
+    log "         Install/configure the sensor first; see the Sur1W1r3 README"
 fi
 
 EVE_PATH="/var/log/suricata/eve.json"
@@ -57,6 +57,9 @@ log "Installing shipper into $INSTALL_DIR"
 
 # Install this project and its declared dependencies. The sensor host does not
 # need a ThreatPulse source checkout or any SOC package.
+# Remove the previous distribution name if upgrading an existing install; the
+# new package still installs the legacy `suricata-shipper` executable alias.
+"$INSTALL_DIR/.venv/bin/pip" uninstall --quiet --yes suricata-shipper >/dev/null 2>&1 || true
 "$INSTALL_DIR/.venv/bin/pip" install --quiet "$AGENT_DIR"
 
 # --- State and config directories -------------------------------------------
@@ -93,7 +96,7 @@ fi
 systemctl daemon-reload
 
 if [[ "${1:-}" == "--start" ]]; then
-    log "Starting suricata-shipper"
+    log "Starting Sur1W1r3"
     systemctl enable --now suricata-shipper.service
     sleep 2
     systemctl --no-pager --lines=20 status suricata-shipper.service || true
@@ -108,7 +111,7 @@ cat <<EOF
   2. On the ThreatPulse host, add a matching "label:secret" entry to
      NETWORK_MONITOR_INGEST_KEYS and restart network-monitor.
   3. Verify connectivity:
-       sudo -u $SERVICE_USER $INSTALL_DIR/.venv/bin/suricata-shipper test
+        sudo -u $SERVICE_USER $INSTALL_DIR/.venv/bin/sur1w1r3 test
   4. Enable and start the service:
         systemctl enable --now suricata-shipper
   5. Watch it:

@@ -20,7 +20,7 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-USER_AGENT = "suricata-shipper/1.0"
+USER_AGENT = "Sur1W1r3/1.0"
 
 
 class FlowClient:

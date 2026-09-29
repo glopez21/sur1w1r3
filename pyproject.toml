@@ -1,14 +1,14 @@
 [project]
-name = "suricata-shipper"
+name = "sur1w1r3"
 version = "1.0.0"
-description = "Ship Suricata EVE flow and alert telemetry to ThreatPulse"
+description = "Sur1W1r3: ship Suricata EVE telemetry to a SOC"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
     { name = "ThreatPulse contributors" },
 ]
-keywords = ["security", "soc", "siem", "suricata", "ids", "threatpulse", "netflow"]
+keywords = ["security", "soc", "siem", "suricata", "ids", "sur1w1r3", "netflow"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: System Administrators",
@@ -37,6 +37,8 @@ dev = [
 ]
 
 [project.scripts]
+sur1w1r3 = "suricata_shipper.__main__:main"
+# Preserve the original executable name for existing sensor installations.
 suricata-shipper = "suricata_shipper.__main__:main"
 
 [build-system]

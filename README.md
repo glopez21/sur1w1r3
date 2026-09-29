@@ -1,9 +1,9 @@
-# Suricata Shipper
+# Sur1W1r3
 
-Ships Suricata EVE telemetry from a monitored host to **ThreatPulse**, the Tier-1
-platform. Alerts that clear ThreatPulse's correlation and triage thresholds are
-escalated to Augur by the alerting service, so this agent **never talks to
-Augur directly**.
+Sur1W1r3 ships Suricata EVE telemetry from monitored hosts to **ThreatPulse**,
+the Tier-1 SOC platform. Alerts that clear ThreatPulse's correlation and triage
+thresholds are escalated to Augur by the alerting service, so Sur1W1r3 **never
+talks to Augur directly**.
 
 One sensor, two streams:
 
@@ -91,11 +91,10 @@ The detected interface is used to identify host IPs for flow byte direction;
 it does not modify Suricata capture settings. If needed, override detection with
 `SURICATA_INTERFACE` and configure `af-packet` in Suricata separately.
 
-After this project is published, a remote host can run the same check without a
-ThreatPulse checkout:
+A remote host can run the same check without a ThreatPulse checkout:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/glopez21/suricata-shipper/main/deploy/bootstrap.sh \
+curl -fsSL https://raw.githubusercontent.com/glopez21/sur1w1r3/main/deploy/bootstrap.sh \
   | sudo bash -s -- --check
 ```
 
@@ -105,13 +104,13 @@ It then installs the shipper, generates `/etc/suricata-shipper.env`, tests each
 configured sink, and starts the service only if tests pass:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/glopez21/suricata-shipper/main/deploy/bootstrap.sh \
+curl -fsSL https://raw.githubusercontent.com/glopez21/sur1w1r3/main/deploy/bootstrap.sh \
   | sudo bash -s -- --install
 ```
 
 For unattended rollout, provide the `EVE_SHIPPER_*` variables via a secret
 manager and preserve only those variables through `sudo`. Pin a release archive
-with `SURICATA_SHIPPER_REF=<tag>` and `SURICATA_SHIPPER_REF_KIND=tags` rather
+with `SUR1W1R3_REF=<tag>` and `SUR1W1R3_REF_KIND=tags` rather
 than tracking `main` in production.
 
 The shipper is standalone: the sensor host needs this project, Suricata, and
@@ -154,7 +153,7 @@ Ingest is **closed by default**: with no keys configured, the endpoint returns
 Verify connectivity and auth **before** starting the daemon:
 
 ```bash
-sudo -u suricata-shipper /opt/suricata-shipper/.venv/bin/suricata-shipper test \
+sudo -u suricata-shipper /opt/suricata-shipper/.venv/bin/sur1w1r3 test \
   --config /etc/suricata-shipper.env
 ```
 
@@ -201,8 +200,8 @@ or `EVE_SHIPPER_ALERT_API_KEY` is required; HMAC is preferred.
 ## Operations
 
 ```bash
-suricata-shipper status     # queue depth per sink, dead letters, read offset
-suricata-shipper version
+sur1w1r3 status     # queue depth per sink, dead letters, read offset
+sur1w1r3 version
 ```
 
 If the queue grows without bound, ThreatPulse is unreachable. `status` shows
@@ -238,7 +237,8 @@ ruff check src tests
 ```
 
 The SQLite queue is self-contained and migrates databases created by the
-monorepo-hosted shipper in place, preserving queued telemetry during upgrades.
+original `suricata-shipper` release in place, preserving queued telemetry during
+upgrades. The legacy `suricata-shipper` command remains available as an alias.
 
 ### Testing
 
