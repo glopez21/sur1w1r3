@@ -1,0 +1,13 @@
+# EVE output fragment. Merge this into the existing /etc/suricata/suricata.yaml
+# under `outputs:`; do not replace the distro's full configuration with it.
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: /var/log/suricata/eve.json
+      types:
+        - alert:
+            payload: no
+            metadata: yes
+            http-body: no
+        - flow

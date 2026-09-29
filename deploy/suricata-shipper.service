@@ -1,0 +1,49 @@
+[Unit]
+Description=Suricata Shipper — EVE telemetry to ThreatPulse
+Documentation=https://github.com/glopez21/suricata-shipper
+After=network-online.target suricata.service
+Wants=network-online.target
+# Do not hard-fail if Suricata is not installed; the shipper waits for the file.
+After=suricata.service
+
+[Service]
+Type=simple
+User=suricata-shipper
+Group=suricata-shipper
+EnvironmentFile=/etc/suricata-shipper.env
+ExecStart=/opt/suricata-shipper/.venv/bin/suricata-shipper run
+Restart=always
+RestartSec=10
+# Give the queue time to flush on a graceful stop.
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+StateDirectory=suricata-shipper
+WorkingDirectory=/var/lib/suricata-shipper
+
+# --- Hardening ---------------------------------------------------------------
+# The shipper only needs to read one file and make outbound HTTPS calls.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+# /var/log/suricata must stay readable; /var/lib is writable via StateDirectory.
+ReadOnlyPaths=/var/log/suricata
+ReadWritePaths=/var/lib/suricata-shipper
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=suricata-shipper
+
+[Install]
+WantedBy=multi-user.target
